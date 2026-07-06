@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en" style="background:#ffffff;">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>the vow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  html{ background:#ffffff; }
+  body{ background:#ffffff; }
+
+  :root{
+    --paper: #ffffff;
+    --paper-deep: #ffffff;
+    --card: #ffffff;
+    --line: #e2e2e2;
+    --line-strong: #c9c9c9;
+    --ink: #111111;
+    --ink-dim: #5a5a5a;
+    --ash: #9a9a9a;
+    --accent: #8a1f1a;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin:0; padding:0; height:100%; min-height:100vh; width:100%;
+    background: var(--paper);
+    font-family: 'EB Garamond', serif;
+    color: var(--ink);
+    overflow: hidden;
+  }
+
+  body{
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+  }
+
+  .texture{
+    position:absolute; inset:0;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.03) 0px, transparent 1px, transparent 2px),
+      repeating-linear-gradient(90deg, rgba(0,0,0,0.02) 0px, transparent 1px, transparent 3px);
+    opacity:0.6;
+    pointer-events:none;
+    z-index: 1;
+  }
+
+  .stage{
+    position:relative;
+    width: 100%;
+    max-width: 420px;
+    padding: 32px 28px 28px;
+    text-align:center;
+    z-index:2;
+  }
+
+  .eyebrow{
+    font-family:'Cinzel', serif;
+    font-weight: 700;
+    font-size:11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin: 0 0 22px;
+  }
+
+  .sigil-wrap{
+    position: relative;
+    width: 230px;
+    height: 230px;
+    margin: 0 auto 22px;
+  }
+
+  svg.sigil{ position:relative; width:100%; height:100%; display:block; z-index:1; }
+
+  .ring-base{ fill:none; stroke: var(--line); stroke-width: 1.5; }
+  .ring-fill{
+    fill:none;
+    stroke: var(--accent);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    transition: stroke-dasharray 1s ease;
+  }
+
+  .count-num{
+    font-family:'Cinzel', serif;
+    font-weight: 900;
+    font-size: 64px;
+    fill: var(--ink);
+    text-anchor: middle;
+  }
+  .count-label{
+    font-family:'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    fill: var(--ink-dim);
+    text-anchor: middle;
+    text-transform: uppercase;
+  }
+
+  .tier-title{
+    font-family:'Cinzel', serif;
+    font-weight:700;
+    font-size: 18px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 4px 0 8px;
+  }
+
+  .tier-text{
+    font-size: 16px;
+    font-style: italic;
+    color: var(--ink-dim);
+    line-height: 1.55;
+    margin: 0 0 24px;
+    min-height: 48px;
+  }
+
+  .stats-row{
+    display:flex;
+    justify-content:center;
+    gap: 0;
+    margin-bottom: 24px;
+    padding: 14px 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .stat{ flex:1; display:flex; flex-direction:column; gap:2px; position:relative; }
+  .stat-val{ font-family:'Cinzel', serif; font-size:20px; color:var(--ink); }
+  .stat-lbl{ font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--ash); }
+  .record-tag{
+    font-family:'Cinzel', serif;
+    font-size: 8px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-top: 2px;
+    opacity: 0;
+    animation: pulseFade 2.4s ease-in-out infinite;
+  }
+  .record-tag.show{ opacity: 1; }
+  @keyframes pulseFade{
+    0%, 100%{ opacity: 0.45; }
+    50%{ opacity: 1; }
+  }
+
+  .actions{ display:flex; gap:12px; justify-content:center; align-items:center; }
+
+  .edit-date-btn{
+    width: 36px; height: 36px;
+    padding: 0;
+    display:flex; align-items:center; justify-content:center;
+    border-radius: 50%;
+    font-size: 14px;
+    line-height:1;
+    flex-shrink: 0;
+  }
+
+  .date-input-wrap{ margin-bottom: 18px; }
+  .date-input-wrap label{
+    display:block;
+    font-family:'Cinzel', serif;
+    font-size:10px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color: var(--ash);
+    margin-bottom: 8px;
+  }
+  input[type="date"]{
+    font-family: 'EB Garamond', serif;
+    font-size: 15px;
+    background: var(--paper-deep);
+    border: 1px solid var(--line-strong);
+    color: var(--ink);
+    padding: 8px 10px;
+    width: 100%;
+    color-scheme: light;
+  }
+
+  button{
+    font-family:'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 12px 20px;
+    background: transparent;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  button:hover{
+    background: var(--ink);
+    color: #ffffff;
+  }
+  button.danger{
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  button.danger:hover{
+    background: var(--accent);
+    color: #ffffff;
+  }
+
+  #confirm-overlay, #date-overlay, #tribute-overlay, #milestone-overlay{
+    position:fixed; inset:0;
+    background: rgba(28,26,22,0.5);
+    display:none;
+    align-items:center; justify-content:center;
+    z-index: 10;
+    padding: 20px;
+  }
+  #confirm-overlay.show, #date-overlay.show, #tribute-overlay.show, #milestone-overlay.show{ display:flex; }
+  .confirm-box{
+    background: var(--card);
+    border: 1px solid var(--line-strong);
+    padding: 28px 26px;
+    max-width: 300px;
+    text-align:center;
+  }
+  .confirm-box p{
+    font-style: italic;
+    color: var(--ink-dim);
+    margin: 0 0 20px;
+  }
+  .confirm-actions{ display:flex; gap:10px; justify-content:center; }
+
+  .tribute-box{
+    background: var(--card);
+    border: 1px solid var(--line-strong);
+    padding: 34px 28px;
+    max-width: 320px;
+    text-align:center;
+  }
+  .tribute-eyebrow{
+    font-family:'Cinzel', serif;
+    font-size:10px;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    color: var(--ash);
+    margin: 0 0 14px;
+  }
+  .tribute-days{
+    font-family:'Cinzel', serif;
+    font-weight:900;
+    font-size: 52px;
+    color: var(--ink);
+    margin: 0 0 6px;
+  }
+  .tribute-sub{
+    font-size: 12px;
+    letter-spacing:1px;
+    color: var(--ink-dim);
+    text-transform: uppercase;
+    margin: 0 0 20px;
+  }
+  .tribute-line{
+    font-style: italic;
+    font-size: 16px;
+    color: var(--ink);
+    line-height: 1.6;
+    margin: 0 0 26px;
+  }
+
+  .milestone-box{
+    background: var(--card);
+    border: 1.5px solid var(--accent);
+    padding: 36px 28px;
+    max-width: 320px;
+    text-align:center;
+    box-shadow: 0 0 32px rgba(138,31,26,0.12);
+  }
+  .milestone-eyebrow{
+    font-family:'Cinzel', serif;
+    font-size:10px;
+    letter-spacing:4px;
+    text-transform:uppercase;
+    color: var(--accent);
+    margin: 0 0 10px;
+  }
+  .milestone-title{
+    font-family:'Cinzel', serif;
+    font-weight:700;
+    font-size: 22px;
+    color: var(--ink);
+    margin: 0 0 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .milestone-line{
+    font-style: italic;
+    font-size: 16px;
+    color: var(--ink-dim);
+    line-height: 1.6;
+    margin: 0 0 24px;
+  }
+</style>
+</head>
+<body style="background:#ffffff;">
+
+<div class="texture"></div>
+
+<div class="stage">
+  <p class="eyebrow">the vow</p>
+
+  <div class="sigil-wrap">
+    <svg class="sigil" viewBox="0 0 230 230">
+      <circle class="ring-base" cx="115" cy="115" r="98"></circle>
+      <circle class="ring-fill" id="ring-fill" cx="115" cy="115" r="98"
+        transform="rotate(-90 115 115)"></circle>
+      <text class="count-num" id="count-num" x="115" y="128">0</text>
+      <text class="count-label" x="115" y="150">days held</text>
+    </svg>
+  </div>
+
+  <p class="tier-title" id="tier-title">the wound is fresh</p>
+  <p class="tier-text" id="tier-text">day one begins the moment you choose it.</p>
+
+  <div class="stats-row">
+    <div class="stat">
+      <span class="stat-val" id="stat-longest">0</span>
+      <span class="stat-lbl">longest</span>
+      <span class="record-tag" id="record-tag">current best</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val" id="stat-falls">0</span>
+      <span class="stat-lbl">falls</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val" id="stat-since">—</span>
+      <span class="stat-lbl">since</span>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button id="begin-btn" style="display:none;">Begin the vow</button>
+    <button class="danger" id="fall-btn" style="display:none;">I fell</button>
+    <button class="edit-date-btn" id="edit-date-btn" title="set start date" aria-label="set start date">&#9998;</button>
+  </div>
+</div>
+
+<div id="confirm-overlay">
+  <div class="confirm-box">
+    <p>the streak breaks here. are you certain?</p>
+    <div class="confirm-actions">
+      <button id="confirm-yes" class="danger">Yes, it ends</button>
+      <button id="confirm-no">No, I hold</button>
+    </div>
+  </div>
+</div>
+
+<div id="tribute-overlay">
+  <div class="tribute-box">
+    <p class="tribute-eyebrow">chapter closed</p>
+    <p class="tribute-days" id="tribute-days">0</p>
+    <p class="tribute-sub">days held before the fall</p>
+    <p class="tribute-line" id="tribute-line">every ending is just a place where a new one begins.</p>
+    <button id="tribute-continue">Begin anew</button>
+  </div>
+</div>
+
+<div id="milestone-overlay">
+  <div class="milestone-box">
+    <p class="milestone-eyebrow">checkpoint reached</p>
+    <p class="milestone-title" id="milestone-title">seven days</p>
+    <p class="milestone-line" id="milestone-line">the first wall breaks.</p>
+    <button id="milestone-continue">Continue the vow</button>
+  </div>
+</div>
+
+<div id="date-overlay">
+  <div class="confirm-box">
+    <div class="date-input-wrap">
+      <label for="date-input">the vow began on</label>
+      <input type="date" id="date-input">
+    </div>
+    <div class="confirm-actions">
+      <button id="date-save">Save</button>
+      <button id="date-cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'vow_tracker_state_v2';
+
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(raw) return JSON.parse(raw);
+    }catch(e){}
+    return null;
+  }
+  function saveState(s){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }catch(e){}
+  }
+
+  let state = loadState();
+  if(!state){
+    state = { startDate: null, longest: 0, falls: 0, history: [], lastMilestone: 0 };
+    saveState(state);
+  }
+  if(state.history === undefined) state.history = [];
+  if(state.lastMilestone === undefined) state.lastMilestone = 0;
+
+  function daysSince(dateStr){
+    const start = new Date(dateStr + 'T00:00:00');
+    const now = new Date();
+    const nowMid = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const diff = Math.floor((nowMid - start) / 86400000);
+    return Math.max(diff, 0);
+  }
+
+  function todayStr(){
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+
+  function formatDate(dateStr){
+    const d = new Date(dateStr + 'T00:00:00');
+    const months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+    return months[d.getMonth()] + ' ' + d.getDate();
+  }
+
+  function pickRandom(arr){
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  // color ramp: faint/unlit -> ember -> deep ink black (bg is now white, so the "burn" ends in black, not white)
+  const COLOR_STOPS = [
+    [0,   [214, 209, 198]],
+    [3,   [184, 126, 92]],
+    [7,   [168, 76, 48]],
+    [14,  [152, 52, 36]],
+    [30,  [132, 28, 24]],
+    [45,  [96, 24, 22]],
+    [60,  [64, 20, 18]],
+    [90,  [38, 16, 15]],
+    [180, [14, 10, 10]],
+    [365, [0, 0, 0]]
+  ];
+  function colorForDays(days){
+    if(days <= COLOR_STOPS[0][0]) return COLOR_STOPS[0][1];
+    for(let i=0; i<COLOR_STOPS.length-1; i++){
+      const [d0, c0] = COLOR_STOPS[i];
+      const [d1, c1] = COLOR_STOPS[i+1];
+      if(days >= d0 && days <= d1){
+        const t = (days - d0) / (d1 - d0);
+        return [
+          Math.round(c0[0] + (c1[0]-c0[0])*t),
+          Math.round(c0[1] + (c1[1]-c0[1])*t),
+          Math.round(c0[2] + (c1[2]-c0[2])*t)
+        ];
+      }
+    }
+    return COLOR_STOPS[COLOR_STOPS.length-1][1];
+  }
+  function rgbToHex([r,g,b]){
+    return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+  }
+
+  const TIERS = [
+    { min:0,  max:0,
+      titles:['the wound is fresh','day zero','before the count'],
+      quotes:[
+        'day one begins the moment you choose it.',
+        'nothing has happened yet. that is the whole point \u2014 now something will.',
+        'the page is blank. that\u2019s not a problem, that\u2019s an opening.',
+        'you don\u2019t need momentum yet. you just need to start.',
+        'this is the only day that asks nothing of your past attempts.',
+        'no history here yet. just a decision.',
+        'you\u2019re not behind. this is where everyone starts.'
+      ]},
+    { min:1,  max:1,
+      titles:['the blade is drawn','one day in','the first mark'],
+      quotes:[
+        'one day. the easy part is already behind you.',
+        'the first step is the only one that asks for courage instead of habit.',
+        'you drew a line. the rest is just holding it.',
+        'day one felt like a decision. day two will feel like a pattern.',
+        'nobody remembers day one. everybody remembers whether you kept going.',
+        'the hardest part of starting is starting. you\u2019re past it.',
+        'one day doesn\u2019t prove anything yet. it just begins something.'
+      ]},
+    { min:2,  max:3,
+      titles:['steady hands','holding the line','early ground'],
+      quotes:[
+        'the noise hasn\u2019t stopped. you\u2019re just not listening.',
+        'a storm doesn\u2019t ask permission. you don\u2019t need to answer it either.',
+        'still early. still counts.',
+        'the urge is loud because it\u2019s losing, not because it\u2019s winning.',
+        'two days ago this felt impossible. it still does. do it anyway.',
+        'this is where most people quietly give up. you\u2019re not most people.',
+        'the discomfort is temporary. the choice is not.'
+      ]},
+    { min:4,  max:6,
+      titles:['the urge howls','the loud middle','the test'],
+      quotes:[
+        'it gets loud right before it gets quiet. keep walking.',
+        'the enemy inside doesn\u2019t retreat. you just get harder to reach.',
+        'this is the part nobody shows you. this is the part that matters most.',
+        'the craving has a shelf life. yours doesn\u2019t.',
+        'you\u2019re not fighting a habit anymore. you\u2019re outlasting a mood.',
+        'the urge is trying to convince you it\u2019s permanent. it isn\u2019t.',
+        'this feeling has lied to you before. don\u2019t believe it again.'
+      ]},
+    { min:7,  max:13,
+      titles:['one week under the vow','past the first wall','seven and counting'],
+      quotes:[
+        'a full week. that\u2019s not luck, that\u2019s discipline.',
+        'the version of you from seven days ago couldn\u2019t have done this. you\u2019re not him anymore.',
+        'a week is long enough to prove it wasn\u2019t an accident.',
+        'seven days is a receipt, not a finish line.',
+        'the hardest week is usually the first one. you already did it.',
+        'you crossed the line where most attempts quietly die.',
+        'a week ago this was a hope. now it\u2019s a track record.'
+      ]},
+    { min:14, max:20,
+      titles:['the old self grows quiet','two weeks deep','the quiet stretch'],
+      quotes:[
+        'two weeks in. the craving is a whisper now, not a scream.',
+        'you don\u2019t fight the same battle twice. the second time, you just win faster.',
+        'the old habit is losing its grip, one quiet day at a time.',
+        'silence used to feel empty. now it just feels earned.',
+        'you\u2019re not white-knuckling this anymore. you\u2019re just living.',
+        'the version of you that struggled at day one wouldn\u2019t recognize this calm.',
+        'two weeks of proof stacked on top of each other.'
+      ]},
+    { min:21, max:29,
+      titles:['something has changed','three weeks in','past the halfway mark'],
+      quotes:[
+        'three weeks. you move differently than the man who started.',
+        'willpower was never the plan. becoming someone new was.',
+        'the shape of your days has changed and you almost didn\u2019t notice.',
+        'this isn\u2019t restraint anymore. it\u2019s just your baseline now.',
+        'the thing you were avoiding stopped being interesting.',
+        'three weeks of evidence is hard to argue with.',
+        'you\u2019re closer to thirty than to zero. don\u2019t look back now.'
+      ]},
+    { min:30, max:44,
+      titles:['one month held','thirty and steady','past the first milestone'],
+      quotes:[
+        'thirty days. most people never make it this far. you did.',
+        'a month is long enough to bury a habit and plant something else in its place.',
+        'this is no longer an experiment. this is who you are now.',
+        'you gave yourself thirty proofs. stop doubting the evidence.',
+        'one month ago this was a hope. now it\u2019s a habit.',
+        'thirty days rewired more than you think.',
+        'a month of choosing yourself, one ordinary day at a time.'
+      ]},
+    { min:45, max:59,
+      titles:['discipline made instinct','past the month mark','the quiet grind'],
+      quotes:[
+        'this isn\u2019t willpower anymore. it\u2019s just who you are.',
+        'the fight didn\u2019t end. it just stopped feeling like a fight.',
+        'you stopped negotiating with the urge. that\u2019s the real win.',
+        'you don\u2019t think about it the way you used to. that\u2019s the point.',
+        'this stopped being about resisting and started being about living.',
+        'forty-five days of showing up when nobody was checking.',
+        'the version of you that needed convincing is long gone.'
+      ]},
+    { min:60, max:89,
+      titles:['the war has shifted','two months strong','past the middle ground'],
+      quotes:[
+        'the battlefield moved. you\u2019re not fighting, you\u2019re living.',
+        'sixty days of choosing yourself. that\u2019s not a phase, that\u2019s a character.',
+        'the version of you that struggled with this feels like a different person now.',
+        'you built something quieter than pride and stronger than motivation.',
+        'this is what consistency looks like when nobody\u2019s watching.',
+        'two months in. the old routine doesn\u2019t even cross your mind anymore.',
+        'sixty days of proof the old story about yourself was wrong.'
+      ]},
+    { min:90, max:179,
+      titles:['legend territory','past the quarter year','rare ground'],
+      quotes:[
+        'ninety days and past it. this is rare ground.',
+        'the mountain stopped noticing you climb. it just lets you pass now.',
+        'this is the part of the story people don\u2019t believe until they\u2019ve lived it.',
+        'most people quit long before this number. you didn\u2019t.',
+        'ninety days ago, this exact day was a fantasy.',
+        'this is the kind of streak that changes how you see yourself.',
+        'you\u2019re not chasing a number anymore. you\u2019re just who you are now.'
+      ]},
+    { min:180, max:364,
+      titles:['half a year unbroken','past the six month mark','the long stretch'],
+      quotes:[
+        'six months. the old habit is a stranger\u2019s memory now.',
+        'half a year of the same choice, made new every single day.',
+        'this stopped being a streak a long time ago. it\u2019s a foundation now.',
+        'you\u2019re not counting days to prove something anymore. you\u2019re just living your life.',
+        'half a year of quiet, deliberate choices nobody clapped for.',
+        'six months in, the question isn\u2019t whether you can. it\u2019s just who you are.',
+        'this is the kind of streak that used to feel like fiction.'
+      ]},
+    { min:365, max:Infinity,
+      titles:['a year and a new man','past the full year','the other side'],
+      quotes:[
+        'one year. you didn\u2019t just quit something \u2014 you built someone.',
+        'the war took a year. you\u2019re still standing. that\u2019s the whole story.',
+        'there is no going back to who you were. there never was.',
+        'a full year of proof. the doubt doesn\u2019t get a vote anymore.',
+        'this is what the other side of the fight actually looks like.',
+        'three hundred and sixty five separate choices, all the same choice.',
+        'you\u2019re not the same person who started this. you never will be again.'
+      ]}
+  ];
+
+  function getTier(days){
+    return TIERS.find(t => days >= t.min && days <= t.max) || TIERS[TIERS.length-1];
+  }
+
+  const MILESTONES = {
+    7:   { title: 'seven days',   line: 'the first wall breaks. it was never as solid as it looked.' },
+    14:  { title: 'two weeks',    line: 'silence, where noise used to live.' },
+    30:  { title: 'thirty days',  line: 'you outlasted the version of you that always gave in.' },
+    60:  { title: 'sixty days',   line: 'this isn\u2019t a streak anymore. it\u2019s a pattern.' },
+    90:  { title: 'ninety days',  line: 'the mountain stopped noticing the climb. it just lets you pass.' },
+    180: { title: 'half a year',  line: 'half a year of choosing yourself, every single day.' },
+    365: { title: 'one year',     line: 'the war took a year. you\u2019re still standing. that\u2019s the whole story.' }
+  };
+  const MILESTONE_DAYS = Object.keys(MILESTONES).map(Number).sort((a,b)=>a-b);
+
+  const FALL_LINES_SHORT = [
+    'short runs still count. the vow doesn\u2019t erase, it just resets.',
+    'a stumble isn\u2019t a story yet. begin again before it becomes one.'
+  ];
+  const FALL_LINES_MID = [
+    'that streak mattered. carry what it taught you into the next one.',
+    'every ending is just a place where a new one begins.'
+  ];
+  const FALL_LINES_LONG = [
+    'that many days doesn\u2019t disappear. it becomes proof of what you\u2019re capable of.',
+    'the record stands. the war continues.'
+  ];
+
+  const RING_CIRC = 2 * Math.PI * 98;
+
+  function render(){
+    const beginBtn = document.getElementById('begin-btn');
+    const fallBtn = document.getElementById('fall-btn');
+    const recordTag = document.getElementById('record-tag');
+
+    if(!state.startDate){
+      document.getElementById('count-num').textContent = '0';
+      document.getElementById('tier-title').textContent = 'no vow yet';
+      document.getElementById('tier-text').textContent = 'begin, and the count starts tomorrow morning.';
+      document.getElementById('stat-longest').textContent = state.longest;
+      document.getElementById('stat-falls').textContent = state.falls;
+      document.getElementById('stat-since').textContent = '\u2014';
+      document.getElementById('ring-fill').style.strokeDasharray = '0 ' + RING_CIRC;
+      recordTag.classList.remove('show');
+      beginBtn.style.display = 'inline-block';
+      fallBtn.style.display = 'none';
+      return;
+    }
+
+    beginBtn.style.display = 'none';
+    fallBtn.style.display = 'inline-block';
+
+    const days = daysSince(state.startDate);
+    const tier = getTier(days);
+    const quote = pickRandom(tier.quotes);
+    const title = pickRandom(tier.titles);
+    const ringProgress = Math.min(days / 90, 1);
+    const dash = ringProgress * RING_CIRC;
+
+    document.getElementById('count-num').textContent = days;
+    document.getElementById('tier-title').textContent = title;
+    document.getElementById('tier-text').textContent = quote;
+    document.getElementById('stat-longest').textContent = Math.max(state.longest, days);
+    document.getElementById('stat-falls').textContent = state.falls;
+    document.getElementById('stat-since').textContent = formatDate(state.startDate);
+
+    document.getElementById('ring-fill').style.strokeDasharray = dash + ' ' + RING_CIRC;
+
+    if(days >= state.longest && days > 0){
+      recordTag.classList.add('show');
+    } else {
+      recordTag.classList.remove('show');
+    }
+
+    checkMilestone(days);
+  }
+
+  function checkMilestone(days){
+    for(const m of MILESTONE_DAYS){
+      if(days >= m && state.lastMilestone < m){
+        state.lastMilestone = m;
+        saveState(state);
+        showMilestone(m);
+        break;
+      }
+    }
+  }
+
+  function showMilestone(m){
+    const data = MILESTONES[m];
+    document.getElementById('milestone-title').textContent = data.title;
+    document.getElementById('milestone-line').textContent = data.line;
+    document.getElementById('milestone-overlay').classList.add('show');
+  }
+
+  function highestMilestoneAtOrBelow(days){
+    let result = 0;
+    for(const m of MILESTONE_DAYS){
+      if(days >= m) result = m;
+    }
+    return result;
+  }
+
+  document.getElementById('milestone-continue').addEventListener('click', function(){
+    document.getElementById('milestone-overlay').classList.remove('show');
+  });
+
+  document.getElementById('begin-btn').addEventListener('click', function(){
+    state.startDate = todayStr();
+    state.lastMilestone = 0;
+    saveState(state);
+    render();
+  });
+
+  document.getElementById('fall-btn').addEventListener('click', function(){
+    document.getElementById('confirm-overlay').classList.add('show');
+  });
+
+  document.getElementById('confirm-no').addEventListener('click', function(){
+    document.getElementById('confirm-overlay').classList.remove('show');
+  });
+
+  document.getElementById('edit-date-btn').addEventListener('click', function(){
+    const input = document.getElementById('date-input');
+    input.value = state.startDate || todayStr();
+    input.max = todayStr();
+    document.getElementById('date-overlay').classList.add('show');
+  });
+
+  document.getElementById('date-cancel').addEventListener('click', function(){
+    document.getElementById('date-overlay').classList.remove('show');
+  });
+
+  document.getElementById('date-save').addEventListener('click', function(){
+    const chosen = document.getElementById('date-input').value;
+    if(chosen){
+      state.startDate = chosen;
+      const days = daysSince(chosen);
+      state.lastMilestone = highestMilestoneAtOrBelow(days);
+      saveState(state);
+      render();
+    }
+    document.getElementById('date-overlay').classList.remove('show');
+  });
+
+  document.getElementById('confirm-yes').addEventListener('click', function(){
+    const days = daysSince(state.startDate);
+    state.longest = Math.max(state.longest, days);
+    state.falls += 1;
+    state.history.push({ start: state.startDate, end: todayStr(), days: days });
+    if(state.history.length > 30) state.history.shift();
+
+    let line;
+    if(days < 7) line = pickRandom(FALL_LINES_SHORT);
+    else if(days < 30) line = pickRandom(FALL_LINES_MID);
+    else line = pickRandom(FALL_LINES_LONG);
+
+    document.getElementById('tribute-days').textContent = days;
+    document.getElementById('tribute-line').textContent = line;
+
+    state.startDate = null;
+    saveState(state);
+
+    document.getElementById('confirm-overlay').classList.remove('show');
+    document.getElementById('tribute-overlay').classList.add('show');
+    render();
+  });
+
+  document.getElementById('tribute-continue').addEventListener('click', function(){
+    state.startDate = todayStr();
+    state.lastMilestone = 0;
+    saveState(state);
+    document.getElementById('tribute-overlay').classList.remove('show');
+    render();
+  });
+
+  function refreshQuoteOnly(){
+    if(!state.startDate) return;
+    const days = daysSince(state.startDate);
+    const tier = getTier(days);
+    document.getElementById('tier-text').textContent = pickRandom(tier.quotes);
+    document.getElementById('tier-title').textContent = pickRandom(tier.titles);
+  }
+
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState === 'visible'){
+      refreshQuoteOnly();
+    }
+  });
+  setInterval(refreshQuoteOnly, 2 * 60 * 60 * 1000);
+
+  render();
+})();
+</script>
+
+</body>
+</html>
